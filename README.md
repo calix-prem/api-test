@@ -9,6 +9,8 @@ Container Setup
 2.	Add a line at the end of `/exa_data/lxc/api/config` to allow Unix socket bind mount.
 ```
 lxc.mount.entry = /tmp/run/proxy.sock run/proxy.sock none bind,create=file 0 0
+lxc.mount.entry = /tmp/run/dbus/system_bus_socket run/dbus/system_bus_socket none bind,create=file 0 0
+
 ```
 
 3.	Start the `api` container
