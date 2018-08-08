@@ -4,7 +4,11 @@ from jsonrpc import *
 import xmltodict
 import json
 
-proxy = ServerProxy( JsonRpc20(), TransportUnixSocket(addr="/tmp/proxy.sock") )
+log = "xpatch.log"
+
+proxy = ServerProxy( JsonRpc20(), TransportUnixSocket(addr="/var/run/proxy.sock", logfunc=log_file(log)) )
+
+print("Logging JSON-RPC at: " + log)
 
 ret = proxy.xpatch(
   "user",
@@ -13,6 +17,13 @@ ret = proxy.xpatch(
   "/config/rg/wifi/device[radio='1']",
   "<device><radio>1</radio><iface><num>1</num><ssid>5E</ssid></iface></device>")
 
+"""
+ret = proxy.dcli( 
+  "user",      
+  "auth_token",
+  "lmd",                              
+  "xpatch /cnfig/rg/wifi/device[radio='1'] \"<device><radio>1</radio><iface><num>1</num><ssid>5E</ssid></iface></device>\"")
+"""
 print("SET RESULT: " + ret + "\n")
 
 ret = proxy.xget(
