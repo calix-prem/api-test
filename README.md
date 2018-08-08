@@ -9,6 +9,8 @@ Container Setup
 2.	Add a line at the end of `/exa_data/lxc/api/config` to allow Unix socket bind mount.
 ```
 lxc.mount.entry = /tmp/run/proxy.sock run/proxy.sock none bind,create=file 0 0
+lxc.mount.entry = /tmp/run/dbus/system_bus_socket run/dbus/system_bus_socket none bind,create=file 0 0
+
 ```
 
 3.	Start the `api` container
@@ -35,6 +37,32 @@ lxc.mount.entry = /tmp/run/proxy.sock run/proxy.sock none bind,create=file 0 0
 ```
 [api] / # cd api-test
 [api] /api-test # ./setup.sh
+```
+
+DMs
+===
+
+Currently there are 2 DMs. `cntnr-proxy` is responsible for the JSON-RPC proxy, and `zmq-event` is
+responsible for the DBus event proxy.
+
+Register for Events
+===================
+
+`zmq-event` registers for a hard coded list of events from `daemonlib`. The list can be changed by
+modifying the `main` function in `depot/zmq-event/src/zmqevent.c`.
+
+Current list of registered events:
+```
+    dl_event_subscribe("rgcommon", "interface-connected");
+    dl_event_subscribe("rgcommon", "interface-disconnected");
+    dl_event_subscribe("rgcommon", "dhcp-lease-added");
+    dl_event_subscribe("rgcommon", "dhcp-lease-deleted");
+    dl_event_subscribe("sysmgr", "flash-image-started");
+    dl_event_subscribe("sysmgr", "flash-image-completed");
+    dl_event_subscribe("rgcommon", "station-registered");
+    dl_event_subscribe("rgcommon", "station-expired");
+    dl_event_subscribe("rgcommon", "wps-result");
+    dl_event_subscribe("devicemgr", "devicemgr-mode-role");
 ```
 
 Running Test Scripts
@@ -120,3 +148,4 @@ slforum.org<\\/vendorid><reqopts>43 120 121 125<\\/reqopts><service-label>wan<\\
 /service-label><\\/interface><\\/interfaces><\\/rg><\\/config>", "id": 0}'
 close '/var/run/proxy.sock'
 ```
+
