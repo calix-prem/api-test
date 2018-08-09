@@ -150,6 +150,39 @@ slforum.org<\\/vendorid><reqopts>43 120 121 125<\\/reqopts><service-label>wan<\\
 close '/var/run/proxy.sock'
 ```
 
+xpatch.py
+---------
+
+This script does an `xpatch` to modify the SSID on the main Wifi radio, and then
+`xget` to verify that the SSID has indeed been modified.
+
+```
+[api] ~/api-test # python xpatch.py
+Logging JSON-RPC at: xpatch.log
+SET RESULT: lmd>xpatch /config/rg/wifi/device[radio=1] <device><radio>1</radio><iface><num>1</num><ssid>5E</ssid></iface></device>
+
+
+GET RESULT: <?xml version="1.0"?>
+<config><rg><wifi><device><radio>1</radio><iface><num>1</num><ssid>5E</ssid></iface></device></wifi></rg></config>
+
+{
+    "config": {
+        "rg": {
+            "wifi": {
+                "device": {
+                    "iface": {
+                        "num": "1", 
+                        "ssid": "5E"
+                    }, 
+                    "radio": "1"
+                }
+            }
+        }
+    }
+}
+```
+
+
 test_event.py
 -------------
 
