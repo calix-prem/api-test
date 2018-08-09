@@ -26,6 +26,7 @@ def evt_handler(producer, event, tags=None):
     print "evt_handler called %s/%s" % (producer, event)
 
     if producer == 'rgcommon' and event == 'dhcp-lease-added':
+        print "event %s for mac %s" % (event, tags['mac'])
         ret = proxy.xget(
             "user",
             "auth_token",
