@@ -7,33 +7,25 @@ import pydbus
 from gi.repository import GLib
 from texttable import Texttable
 
-log="test_event.log"
-
-# JSON-RPC server proxy
-proxy = ServerProxy(
-        JsonRpc20(),
-        TransportUnixSocket(addr="/var/run/proxy.sock",
-        logfunc=log_file(log)))
-
-print("Logging JSON-RPC API at: " + log)
-
 # D-Bus event bus
 bus = pydbus.SystemBus()
-dev = bus.get("com.calix.exos", "events")
+dev = bus.get("com.calix.exos")
 
 # Event handler
-def evt_handler(producer, event, tags=None):
-    print "evt_handler called %s/%s" % (producer, event)
+def evt_handler(sender, object, iface, signal, args):
+    event, tags = args
+    print "evt_handler called %s" % event
 
-    if producer == 'rgcommon' and event == 'dhcp-lease-added':
+    if event == 'dhcp-lease-added':
         print "event %s for mac %s" % (event, tags['mac'])
-        ret = proxy.xget(
-            "user",
-            "auth_token",
-            "lmd",
+        ret = dev.xget(
             "/status/rg/dhcp[pool='%s'][mac='%s']/leases" % (tags['pool-name'], tags['mac']))
   
-        result = xmltodict.parse(ret)
+        try:
+            result = xmltodict.parse(ret)
+        except:
+            print("XML = " + ret)
+            raise 
         # print(json.dumps(result, sort_keys=True, indent=4))
         lease = result['status']['rg']['dhcp']['leases']['lease']
         print(lease)
@@ -53,7 +45,10 @@ def evt_handler(producer, event, tags=None):
         print(table.draw())
 
 # Register event handler
-dev.Event.connect(evt_handler)
+# dev.events.connect(evt_handler)
+bus.subscribe(sender="com.calix.exos", iface="com.calix.exos", signal="events", arg0="interface-connected", signal_fired=evt_handler)
+bus.subscribe(sender="com.calix.exos", iface="com.calix.exos", signal="events", arg0="dhcp-lease-added", signal_fired=evt_handler)
+# dev.events.connect(evt_handler)
 
 # Start thread loop
 loop = GLib.MainLoop()
