@@ -6,39 +6,33 @@ Container Setup
 # lxc-create -t alpine-prem2 -n api
 ```
 
-2.  (For SIM targets) Comment out capability drop line in `/exa_data/lxc/api/config` by prefixing it with `#`.
-
-```
-# lxc.cap.drop = sys_module mac_admin mac_override sys_time
-```
-
-3.	Add a line at the end of `/exa_data/lxc/api/config` to allow Unix socket bind mount.
+2.	Add a line at the end of `/exa_data/lxc/api/config` to allow Unix socket bind mount.
 ```
 lxc.mount.entry = /tmp/run/proxy.sock run/proxy.sock none bind,create=file 0 0
 lxc.mount.entry = /tmp/run/dbus/system_bus_socket run/dbus/system_bus_socket none bind,create=file 0 0
 ```
 
-4.	Start the `api` container
+3.	Start the `api` container
 ```
 # lxc-start -n api
 ```
 
-5.	Attach to the `api` container shell
+4.	Attach to the `api` container shell
 ```
 # lxc-attach -n api
 ```
 
-6.	Install git inside the container shell
+5.	Install git inside the container shell
 ```
 [api] / # apk update && apk add git
 ```
 
-7.	Clone test script repo
+6.	Clone test script repo
 ```
 [api] / # git clone https://github.com/calix-prem/api-test.git
 ```
 
-8.	CD to ‘apt-get’ folder and install a few dependencies
+7.	CD to ‘apt-get’ folder and install a few dependencies
 ```
 [api] / # cd api-test
 [api] /api-test # ./setup.sh
