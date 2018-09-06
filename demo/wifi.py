@@ -69,7 +69,11 @@ def evt_handler(sender, object, iface, signal, args):
     print("evt_handler called %s: %s" % (event, tags['mac']))
     queues.send_msg(json.dumps(evt))
 
+bus.subscribe(sender="com.calix.exos", iface="com.calix.exos", signal="events", arg0="station-registered", signal_fired=evt_handler)
+bus.subscribe(sender="com.calix.exos", iface="com.calix.exos", signal="events", arg0="station-expired", signal_fired=evt_handler)
 bus.subscribe(sender="com.calix.exos", iface="com.calix.exos", signal="events", arg0="dhcp-lease-added", signal_fired=evt_handler)
+bus.subscribe(sender="com.calix.exos", iface="com.calix.exos", signal="events", arg0="dhcp-lease-changed", signal_fired=evt_handler)
+bus.subscribe(sender="com.calix.exos", iface="com.calix.exos", signal="events", arg0="dhcp-lease-deleted", signal_fired=evt_handler)
 
 
 from bottle import route, run, template, static_file
@@ -79,10 +83,6 @@ app = Bottle()
 @app.route('/')
 def send_home():
     return static_file('index.html', root='static')
-
-@app.route('/static/<filepath>')
-def server_static(filepath):
-    return static_file(filepath, root='static')
 
 @app.route('/wifi')
 def wifi():
@@ -101,12 +101,11 @@ def wifi():
     if type(metrics) is not list:
         metrics = [metrics]
 
-    timestamp = time.strftime('%H%M%S')
-    metrics_data = [['time', timestamp]]
+    metrics_data = {'time': datetime.datetime.now().isoformat(), 'data': {}}
     for sta in metrics:
        mac = sta['mac']
        sn = int(sta['metrics'].split(',')[5])
-       metrics_data.append([mac, sn])
+       metrics_data['data'][mac] = sn
     return json.dumps(metrics_data)
 
 @app.route('/metrics')
@@ -124,6 +123,11 @@ def handle_websocket():
     lock = queues.add_wsock(wsock)
     lock.acquire()
     print("websockt is closed")
+
+@app.route('/<filepath:path>')
+def server_static(filepath):
+    print("static file %s" % filepath)
+    return static_file(filepath, root='static')
 
 
 from gevent import monkey; monkey.patch_all()

@@ -1,48 +1,138 @@
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!DOCTYPE html>
+<html lang="en">
 
-    <link rel="stylesheet" type="text/css" href="static/c3.css">
-    <link rel="stylesheet" type="text/css" href="static/bootstrap.min.css">
+  <head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>GigaSpire - Dashboard</title>
+
+    <!-- Bootstrap core CSS-->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template-->
+    <link href="css/sb-admin.css" rel="stylesheet">
+
     <title>GigaSpire Real-Time WiFi Status</title>
     <style>
       .table-wrapper-scroll-y {
         display: block;
-        max-height: 200px;
+        max-height: 300px;
         overflow-y: auto;
         -ms-overflow-style: -ms-autohiding-scrollbar;
       }
     </style>
   </head>
-  <body>
-    <div class="container-fluid">
-      <h4>GigaSpire Real-Time WiFi Status</h4>
-      <div id="chart"></div>
-      <h4>Most Recent Events</h4>
-      <div id="table" class="table-wrapper-scroll-y">
-        <table class="table table-hover table-bordered table-striped table-sm">
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Message</th>
-             </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
-      <h4>Current Metrics</h4>
-      <div id="metrics" class="code-block">
-        <pre>
-        </pre>
-      </div>
-    </div>
 
-    <script src="static/jquery-3.3.1.min.js" charset="utf-8"></script>
-    <script src="static/bootstrap.bundle.min.js" charset="utf-8"></script>
-    <script src="static/d3-5.4.0.min.js" charset="utf-8"></script>
-    <script src="static/c3.min.js" charset="utf-8"></script>
+  <body id="page-top">
+
+    <nav class="navbar navbar-expand navbar-dark bg-dark static-top">
+      <a class="navbar-brand mr-1" href="index.html">Real-time GigaSpire WiFi Analytics</a>
+    </nav>
+
+    <div id="wrapper">
+
+      <!-- Sidebar -->
+      <ul class="sidebar navbar-nav">
+        <li class="nav-item active">
+          <a class="nav-link" href="index.html">
+            <i class="fas fa-fw fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+      </ul>
+
+      <div id="content-wrapper">
+
+        <div class="container-fluid">
+
+          <!-- Breadcrumbs-->
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="#">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item active">Overview</li>
+          </ol>
+
+          <!-- Area Chart Example-->
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fas fa-chart-area"></i>
+              Signal to Noise Ratio</div>
+            <div class="card-body">
+              <canvas id="snchart" width="100%" height="30"></canvas>
+            </div>
+            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+          </div>
+
+          <!-- DataTables Example -->
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fas fa-table"></i>
+              Recent Events</div>
+            <div class="card-body">
+              <div class="table-responsive table-wrapper-scroll-y" id="event_table">
+                <table class="table table-hover table-bordered table-striped" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Timestamp</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fas fa-table"></i>
+              Current Metrics</div>
+            <div class="card-body">
+              <div id="metrics" class="code-block">
+                <pre>
+                </pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- /.content-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Page level plugin JavaScript-->
+    <script src="vendor/chart.js/Chart.bundle.min.js"></script>
+    <script src="moment.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin.min.js"></script>
+
     <script>
       function formatXml(xml) {
         var formatted = '';
@@ -75,37 +165,120 @@
         return formatted;
       }
 
-      var num_entries_added = 0;
-      var chart = c3.generate({
-        bindto: '#chart',
-        data: {
-          x : 'time',
-          xFormat : '%H%M%S',
-          columns: [
-              ['time']
-          ]
-        },
-        axis : {
-          x : {
-            type : 'timeseries',
-            tick : {
-              format : "%H:%M:%S" // https://github.com/mbostock/d3/wiki/Time-Formatting#wiki-format
+      window.onload = function() {
+        var chartColors = [
+          'rgb(153, 102, 255)', // purple
+          'rgb(201, 203, 207)', // grey
+          'rgb(75, 192, 192)', // green
+          'rgb(255, 205, 86)', // yellow
+          'rgb(255, 99, 132)', // red
+          'rgb(54, 162, 235)', // blue
+          'rgb(255, 159, 64)' // orange
+        ];
+
+        randomScalingFactor = function() {
+          return Math.round(Math.random() * 200 - 100);
+        };
+
+        var ctx = document.getElementById('snchart').getContext('2d');
+        var config = {
+          type: 'line',
+          options: {
+            responsive: true,
+            title: {
+              display: true,
+              text: 'Station Signal to Noise Chart'
+            },
+            tooltips: {
+              mode: 'index',
+              intersect: false,
+            },
+            hover: {
+              mode: 'nearest',
+              intersect: true
+            },
+            scales: {
+              xAxes: [{
+                type: 'time',
+                time: {
+                  displayFormats: {
+                    second: 'hh:mm:ss'
+                  }
+                },
+                display: true,
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Time'
+                }
+              }],
+              yAxes: [{
+                display: true,
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Value'
+                }
+              }]
             }
           }
-        }
-      });
+        };
+  
+        var chart = new Chart(ctx, config);
 
-      setInterval(function () {
-        $.get('/wifi').done(function(data) {
-          metrics = $.parseJSON(data);
-          shift_len = (num_entries_added > 200) ? 1 : 0;
-          chart.flow({
-            columns: metrics,
-            length: shift_len
+        var addData = function(mac, value) {
+          var dataset = chart.data.datasets.find(function(x) { return x.label === mac });
+          if (dataset === undefined) {
+            var data = new Array(chart.data.labels.length-1).fill(undefined);
+            var color = chartColors.pop()
+            data.push(value);
+            chart.data.datasets.push({
+              label: mac,
+              backgroundColor: color,
+              borderColor: color,
+              fill: false,
+              data: data
+            });
+          }
+          else
+          {
+            dataset.data.push(value);
+          }
+        }
+
+        var topOffAndTrim = function () {
+          var numLabels = chart.data.labels.length;
+          $.each(chart.data.datasets, function (index, ds) {
+            if (numLabels > ds.data.length) {
+              ds.data = ds.data.concat(new Array(numLabels - ds.data.length).fill(undefined));
+            }
           });
-          num_entries_added += 1
-        });
-      }, 5000);
+          if (numLabels > 100) {
+            chart.data.labels.shift();
+            $.each(chart.data.datasets, function (index, ds) {
+              ds.data.shift();
+            });
+            chart.data.datasets = chart.data.datasets.filter(function(ds) {
+              if (ds.data.every(x => x === undefined)) {
+                chartColors.push(ds.backgroundColor);
+                return false;
+              }
+              else {
+                return true;
+              }
+            });
+          }
+        }
+
+        setInterval(function () {
+          $.get('/wifi').done(function(data) {
+            metrics = $.parseJSON(data);
+
+            chart.data.labels.push(moment(metrics.time));
+            $.each(metrics.data, mac => addData(mac, metrics.data[mac]));
+            topOffAndTrim();
+            chart.update();
+          });
+        }, 5000);
+      }
 
       setInterval(function () {
         $.get('/metrics').done(function(data) {
@@ -131,7 +304,10 @@
             $('<td>').text(evt.time),
             $('<td>').text(evt.event + " " + evt.mac)
           );
-          $('#table tbody').prepend($tr);
+          $('#event_table tbody').prepend($tr);
+          if ($('#event_table tr').length > 100) {
+            $('#event_table tr:last').remove();
+          }
         };
       }
 
