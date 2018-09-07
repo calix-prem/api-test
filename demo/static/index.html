@@ -62,14 +62,14 @@
           </ol>
 
           <!-- Area Chart Example-->
-          <div class="card mb-3">
+          <div id="snchart" class="card mb-3">
             <div class="card-header">
               <i class="fas fa-chart-area"></i>
               Signal to Noise Ratio</div>
             <div class="card-body">
-              <canvas id="snchart" width="100%" height="30"></canvas>
+              <canvas width="100%" height="30"></canvas>
             </div>
-            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+            <div class="card-footer small text-muted">Not updated</div>
           </div>
 
           <!-- DataTables Example -->
@@ -176,11 +176,7 @@
           'rgb(255, 159, 64)' // orange
         ];
 
-        randomScalingFactor = function() {
-          return Math.round(Math.random() * 200 - 100);
-        };
-
-        var ctx = document.getElementById('snchart').getContext('2d');
+        var ctx = $('#snchart canvas')[0].getContext('2d');
         var config = {
           type: 'line',
           options: {
@@ -251,7 +247,7 @@
               ds.data = ds.data.concat(new Array(numLabels - ds.data.length).fill(undefined));
             }
           });
-          if (numLabels > 100) {
+          if (numLabels > 150) {
             chart.data.labels.shift();
             $.each(chart.data.datasets, function (index, ds) {
               ds.data.shift();
@@ -268,6 +264,8 @@
           }
         }
 
+        var lastUpdated;
+
         setInterval(function () {
           $.get('/wifi').done(function(data) {
             metrics = $.parseJSON(data);
@@ -276,6 +274,9 @@
             $.each(metrics.data, mac => addData(mac, metrics.data[mac]));
             topOffAndTrim();
             chart.update();
+            lastUpdated = moment();
+	  }).always(function() {
+            $('#snchart .card-footer').text("Updated " + lastUpdated.fromNow());
           });
         }, 5000);
       }

@@ -1,6 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-from jsonrpc import *
 import xmltodict
 import json
 import pydbus
@@ -14,10 +13,10 @@ dev = bus.get("com.calix.exos")
 # Event handler
 def evt_handler(sender, object, iface, signal, args):
     event, tags = args
-    print "evt_handler called %s" % event
+    print("evt_handler called %s" % event)
 
     if event == 'dhcp-lease-added':
-        print "event %s for mac %s" % (event, tags['mac'])
+        print("event %s for mac %s" % (event, tags['mac']))
         ret = dev.xget(
             "/status/rg/dhcp[pool='%s'][mac='%s']/leases" % (tags['pool-name'], tags['mac']))
   
