@@ -8,7 +8,6 @@ Container Setup
 
 2.	Add a line at the end of `/exa_data/lxc/api/config` to allow Unix socket bind mount.
 ```
-lxc.mount.entry = /tmp/run/proxy.sock run/proxy.sock none bind,create=file 0 0
 lxc.mount.entry = /tmp/run/dbus/system_bus_socket run/dbus/system_bus_socket none bind,create=file 0 0
 ```
 
@@ -32,7 +31,13 @@ lxc.mount.entry = /tmp/run/dbus/system_bus_socket run/dbus/system_bus_socket non
 [api] / # git clone https://github.com/calix-prem/api-test.git
 ```
 
-7.	CD to ‘apt-get’ folder and install a few dependencies
+7.	Enable `community` repository in `/etc/apk/repositories` by
+        adding this line in the file:
+```
+http://dl-cdn.alpinelinux.org/alpine/v3.7/community
+```
+
+8.	CD to ‘apt-get’ folder and install a few dependencies
 ```
 [api] / # cd api-test
 [api] /api-test # ./setup.sh

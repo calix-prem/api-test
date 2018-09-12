@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if ! grep "alpine/.*/community" /etc/apk/repositories > /dev/null; then
+  echo ERROR: Alpine community repository needs to be enabled in /etc/apk/repositories
+  echo        See https://wiki.alpinelinux.org/wiki/Enable_Community_Repository
+  exit 1
+fi
+
 apk update
 apk add git
 # apk add py3-pip
