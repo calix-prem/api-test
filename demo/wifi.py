@@ -10,6 +10,7 @@ from threading import Thread
 import time
 import datetime
 import xmltodict
+import subprocess
 
 bus = pydbus.SystemBus()
 dev = bus.get("com.calix.exos")
@@ -137,11 +138,15 @@ from geventwebsocket.handler import WebSocketHandler
 
 def run_web():
     host = "0.0.0.0"
-    port = 8080
+    port = 80
+    ifconfig_cmd = subprocess.run(
+        'ifconfig eth0 | grep "inet\ addr" | cut -d: -f2 | cut -d" " -f1',
+        shell=True, check=True, stdout=subprocess.PIPE)
+    public_ip = ifconfig_cmd.stdout.decode('ascii').rstrip()
 
     server = WSGIServer((host, port), app,
                     handler_class=WebSocketHandler)
-    print("access @ http://%s:%s/websocket.html" % (host,port))
+    print("access @ http://%s/" % public_ip)
     server.serve_forever()
 
 web_worker = Thread(target=run_web)

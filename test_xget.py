@@ -2,7 +2,6 @@
 
 import xmltodict
 import pydbus
-from gi.repository import GLib
 
 # D-Bus event bus
 bus = pydbus.SystemBus()
