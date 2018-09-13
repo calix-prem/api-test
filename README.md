@@ -226,7 +226,8 @@ This example shows a dynamic HTML chart displaying WiFi analytics.
 
 Start the application:
 ```
-[api] ~/api-test # ./demo/wifi.py &
+[api] ~/api-test # cd demo
+[api] ~/api-test/demo # ./wifi.py &
 access @ http://192.168.1.124/
 ```
 
@@ -234,5 +235,8 @@ Use a web browser connected to the LAN port to access the displayed URL (your IP
 
 Terminate the application:
 ```
-[api] ~/api-test # killall -9 wifi.py
+[api] ~/api-test/demo # killall -9 wifi.py
 ```
+
+![Image of Demo](https://raw.githubusercontent.com/calix-prem/api-test/master/wifi_analytics.png)
+
