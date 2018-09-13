@@ -46,8 +46,7 @@ http://dl-cdn.alpinelinux.org/alpine/v3.7/community
 DMs
 ===
 
-Currently there are 2 DMs. `cntnr-proxy` is responsible for the JSON-RPC proxy, and `zmq-event` is
-responsible for the DBus event proxy.
+The DM `zmq-event` is responsible for the DBus-to-DCLI proxy.
 
 Register for Events
 ===================
@@ -219,3 +218,16 @@ lan      00:16:3e:8a:1a:6a   192.168.1.134        1533758181     0C03613032     
 ```
 
 Press `Ctrl-C` to stop the execution.
+
+demo/wifi.py
+------------
+
+This example shows a dynamic HTML chart displaying WiFi analytics.
+
+```
+[api] ~/api-test # ./demo/wifi.py &
+access @ http://192.168.1.124/
+```
+
+Use a web browser connected to the LAN port to access the displayed URL (your IP address may be different).
+
