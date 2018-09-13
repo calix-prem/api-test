@@ -8,7 +8,6 @@ Container Setup
 
 2.	Add a line at the end of `/exa_data/lxc/api/config` to allow Unix socket bind mount.
 ```
-lxc.mount.entry = /tmp/run/proxy.sock run/proxy.sock none bind,create=file 0 0
 lxc.mount.entry = /tmp/run/dbus/system_bus_socket run/dbus/system_bus_socket none bind,create=file 0 0
 ```
 
@@ -32,7 +31,13 @@ lxc.mount.entry = /tmp/run/dbus/system_bus_socket run/dbus/system_bus_socket non
 [api] / # git clone https://github.com/calix-prem/api-test.git
 ```
 
-7.	CD to ‘apt-get’ folder and install a few dependencies
+7.	Enable `community` repository in `/etc/apk/repositories` by
+        adding this line in the file:
+```
+http://dl-cdn.alpinelinux.org/alpine/v3.7/community
+```
+
+8.	CD to ‘apt-get’ folder and install a few dependencies
 ```
 [api] / # cd api-test
 [api] /api-test # ./setup.sh
@@ -41,8 +46,7 @@ lxc.mount.entry = /tmp/run/dbus/system_bus_socket run/dbus/system_bus_socket non
 DMs
 ===
 
-Currently there are 2 DMs. `cntnr-proxy` is responsible for the JSON-RPC proxy, and `zmq-event` is
-responsible for the DBus event proxy.
+The DM `zmq-event` is responsible for the DBus-to-DCLI proxy.
 
 Register for Events
 ===================
@@ -214,3 +218,21 @@ lan      00:16:3e:8a:1a:6a   192.168.1.134        1533758181     0C03613032     
 ```
 
 Press `Ctrl-C` to stop the execution.
+
+demo/wifi.py
+------------
+
+This example shows a dynamic HTML chart displaying WiFi analytics.
+
+Start the application:
+```
+[api] ~/api-test # ./demo/wifi.py &
+access @ http://192.168.1.124/
+```
+
+Use a web browser connected to the LAN port to access the displayed URL (your IP address may be different).
+
+Terminate the application:
+```
+[api] ~/api-test # killall -9 wifi.py
+```
