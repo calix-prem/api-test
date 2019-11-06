@@ -10,7 +10,7 @@ Container Setup
 2.	The application name is `al` for the example container image. Install the container. The LXC name for
 container is `app-al-1.7.unc`.
 ```
-# dcli appmgr xexec install 1.7.unc /tmp/al-armhf-1.7.unc.app
+# dcli appmgr xexec install al 1.7.unc /tmp/al-armhf-1.7.unc.app
 
 # lxc-ls -f
 NAME                  STATE   AUTOSTART GROUPS IPV4          IPV6
