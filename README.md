@@ -35,6 +35,7 @@ app-al-1.7.unc        RUNNING 0         -      -             -
 
 5.	Install git inside the container shell
 ```
+[al] /tmp # cd /root 
 [al] / # apk update && apk add git
 ```
 
