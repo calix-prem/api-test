@@ -63,8 +63,8 @@ Running Test Python Scripts
 This respository contains a number of Python scripts that demonstrate the capability of the EXOS platform
 API through the D-Bus interface.
 
-xget.py
--------
+test_xget.py
+------------
 
 This example does a simple `xget` and return the XML result converted to JSON format.
 
@@ -75,8 +75,8 @@ This example does a simple `xget` and return the XML result converted to JSON fo
 [al] ~/api-test #
 ```
 
-xpatch.py
----------
+test_xpatch.py
+--------------
 
 This script does an `xpatch` to modify the SSID on the main Wifi radio, and then
 `xget` to verify that the SSID has indeed been modified.
