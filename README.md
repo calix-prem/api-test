@@ -190,11 +190,49 @@ Tag[STRING]: sta-mac = 40:98:ad:94:36:23
 Tag[INT32]: rssi = -36
 Tag[STRING]: file = emesh_core_db.c
 Tag[INT32]: line = 281
+```
+
+EXOS platform provides a resource cleanup event in the event of container shutdown due to an impending
+uninstall. This allows the container application to perform any deregistering or cleanup that needs to
+take place in the context of the container envrionment. You can use CLI command to simulate this special
+shutdown scenario and the `test_signal` example program to examine the `cleanup-app` event.
+
+Use `nohup` to spawn `test_signal` in the background so it detaches from the console. This allows clean exit
+from the console inspite of a spawn background running process. The output of the process is stored in a
+log file called `nohup.out` in the working directory.
+
+```
+[al] ~/api-test/c-examples # nohup ./test_signal &
+[al] ~/api-test/c-examples # nohup: appending output to nohup.out
+
+[al] ~/api-test/c-examples # exit
+[router] ~ # 
+```
+
+Use CLI command to simulate the cleanup shutdown. Use the optional parameter `1` to indicate this special
+shutdown mode.
+
+```
+[router] ~ # dcli appmgr xexec stop al 1
+appmgr>xexec stop al 1
+<stop-app><status>in-progress</status></stop-app>
+[router] ~ # =========== stopped-app(al,success) ===========
+```
+
+`test_signal` recorded the `cleanup-app` event. User of the event needs to validate the `name` field which
+should correspond to the container application name. The `delay` field identifies the number of seconds
+the container application has to perform the cleanup before the shutdown.
+
+```
+[router] ~ # cat /exa_data/lxc/app-al-1.7.unc/rootfs/root/api-test/c-examples/no
+hup.out
+test-signal:main Connecting to the D-Bus.
+test-signal:main Subscribing signals.
 
 Got signal: events
 Event type: cleanup-app
 Tag[STRING]: name = al
 Tag[INT32]: delay = 5
-Tag[STRING]: file = appmgr_lxc.c
+Tag[STRING]: file = appmgr_lxc.cpp
 Tag[INT32]: line = 2166
 ```
