@@ -36,6 +36,7 @@ int main(int argc, char **argv)
   g_variant_get(value, "(@s)", &response);
   g_print("Response: %s\n", g_variant_get_string(response, NULL));
 
+  g_variant_unref(response);
   g_variant_unref(value);
                               
   g_object_unref(connection);

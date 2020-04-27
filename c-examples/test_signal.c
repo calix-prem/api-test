@@ -16,7 +16,7 @@ signal_handler (GDBusConnection  *connection,
                 gpointer         user_data)
 {
   GVariant *event = NULL;
-  g_autoptr(GVariantIter) iter = NULL;
+  GVariantIter *iter = NULL;
   GVariant *tag = NULL;
   GVariant *value = NULL;
 
@@ -48,6 +48,9 @@ signal_handler (GDBusConnection  *connection,
       }
     }
   }
+
+  g_variant_unref(event);
+  g_variant_iter_free(iter);
 }
 
 int main(int argc, char **argv)
